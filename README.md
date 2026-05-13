@@ -254,7 +254,7 @@ gunicorn app.main:app \
 Copy service file:
 
 ```bash
-sudo cp taskapi.service /etc/systemd/system/
+sudo cp task_manager_api.service /etc/systemd/system/
 ```
 
 Reload daemon:
