@@ -1,6 +1,8 @@
 from sqlalchemy.orm import Session
+import logging
 
 from app import models, schemas
+logger = logging.getLogger(__name__)
 
 
 def get_tasks(db: Session):
@@ -22,6 +24,7 @@ def create_task(db: Session, task: schemas.TaskCreate):
     db.add(db_task)
     db.commit()
     db.refresh(db_task)
+    logger.info(f"Task operation successful: {db_task.id}")
 
     return db_task
 
@@ -44,6 +47,7 @@ def update_task(db: Session, task_id: int, task: schemas.TaskUpdate):
 
     db.commit()
     db.refresh(db_task)
+    logger.info(f"Task operation successful: {db_task.id}")
 
     return db_task
 
@@ -51,11 +55,9 @@ def update_task(db: Session, task_id: int, task: schemas.TaskUpdate):
 
 def delete_task(db: Session, task_id: int):
     db_task = get_task(db, task_id)
-
     if not db_task:
         return None
 
     db.delete(db_task)
     db.commit()
-
     return db_task
