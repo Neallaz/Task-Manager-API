@@ -1,0 +1,13 @@
+[Unit]
+Description=FastAPI Tasks API
+After=network.target
+
+[Service]
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/project
+ExecStart=/home/ubuntu/project/venv/bin/gunicorn app.main:app -c gunicorn_conf.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
