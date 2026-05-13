@@ -44,7 +44,7 @@ def test_create_task():
         }
     )
 
-    assert response.status_code == 200
+    assert response.status_code == 201
 
     data = response.json()
 
@@ -116,4 +116,4 @@ def test_delete_task():
 
     response = client.delete(f"/tasks/{task_id}")
 
-    assert response.status_code == 200
+    assert response.status_code == 204

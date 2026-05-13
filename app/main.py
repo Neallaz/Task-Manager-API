@@ -12,8 +12,8 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger(__name__)
-
-Base.metadata.create_all(bind=engine)
+#With Alembic
+#Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="Task Manger API",
