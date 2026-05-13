@@ -14,6 +14,7 @@ A simple CRUD REST API built with FastAPI and PostgreSQL.
 - Gunicorn Deployment
 - systemd Service
 - Linux Ready
+- Automated API Testing with pytest
 
 ---
 
@@ -282,6 +283,77 @@ sudo systemctl status taskapi
 ```
 
 ---
+---
+
+# Running Tests
+
+This project includes automated API tests using `pytest` and `FastAPI TestClient`.
+
+## Install Test Dependencies
+
+```bash
+pip install pytest httpx
+```
+
+---
+
+## Test Structure
+
+```bash
+tests/
+└── test_tasks.py
+```
+
+---
+
+## Run All Tests
+
+```bash
+pytest
+```
+
+---
+
+## Run Tests in Verbose Mode
+
+```bash
+pytest -v
+```
+
+---
+
+## Expected Output
+
+```bash
+===== 5 passed in 1.25s =====
+```
+
+---
+
+## Tested Features
+
+The following features are covered by automated tests:
+
+- Create Task
+- Get All Tasks
+- Get Single Task
+- Update Task
+- Delete Task
+
+---
+
+## Example Test File
+
+```python
+from fastapi.testclient import TestClient
+
+def test_get_tasks():
+    response = client.get("/tasks/")
+    assert response.status_code == 200
+```
+
+---
+
 
 # Technologies Used
 
@@ -293,6 +365,8 @@ sudo systemctl status taskapi
 - Uvicorn
 - Docker
 - systemd
+- pytest
+  
 
 ---
 
