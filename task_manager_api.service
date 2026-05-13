@@ -1,0 +1,17 @@
+[Unit]
+Description=FastAPI Tasks API
+After=network.target postgresql.service
+Requires=postgresql.service
+
+[Service]
+User=negin
+Group=negin
+WorkingDirectory=/home/negin/Projects/Task-Manager-V1
+Environment="PATH=/home/negin/Projects/Task-Manager-V1/venv/bin"
+Environment="DATABASE_URL=postgresql://task_user:123456@localhost:5432/tasks_db"
+ExecStart=/home/negin/Projects/Task-Manager-V1/venv/bin/gunicorn app.main:app -k uvicorn.workers.UvicornWorker -b 0.0.0.0:8000
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
