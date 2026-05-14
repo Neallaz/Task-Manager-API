@@ -10,4 +10,3 @@ test.sqlite
 .pytest_cache/
 .vscode/
 *.log
-.env.example
