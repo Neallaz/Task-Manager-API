@@ -98,11 +98,15 @@ sudo -u postgres psql
 
 ```sql
 CREATE DATABASE tasks_db;
-CREATE USER postgres WITH PASSWORD 'password';
+CREATE USER task_user WITH PASSWORD 'password';
 GRANT ALL PRIVILEGES ON DATABASE tasks_db TO task_user;
 \q
 ```
+## Example .env
 
+```env
+DATABASE_URL=postgresql://task_user:password@localhost:5432/tasks_db
+```
 ---
 
 # Database Migrations
