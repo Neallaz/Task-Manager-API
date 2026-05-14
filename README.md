@@ -16,6 +16,7 @@ A simple CRUD REST API built with FastAPI and PostgreSQL.
 - systemd Service
 - Automated API Testing with pytest
 - Alembic Migrations
+- Makefile Automation
 
 ---
 
@@ -37,6 +38,7 @@ project/
 │   └── test_tasks.py
 ├── alembic/
 │   └── versions/
+├── Makefile
 ├── requirements.txt
 ├── gunicorn_conf.py
 ├── task_manager_api.service
@@ -54,6 +56,7 @@ project/
 - PostgreSQL 15+
 - pip
 - virtualenv
+- make
 
 ---
 
@@ -66,20 +69,21 @@ git clone https://github.com/Neallaz/Task-Manager-API.git
 cd Task-Manager-API
 ```
 
-## 2. Create Virtual Environment
+## 2. Install with Make
+
+```bash
+make install
+```
+
+Or manually:
 
 ```bash
 python3 -m venv venv
 source venv/bin/activate
-```
-
-## 3. Install Dependencies
-
-```bash
 pip install -r requirements.txt
 ```
 
-## 4. Environment Variables
+## 3. Environment Variables
 
 ```bash
 cp .env.example .env
@@ -98,18 +102,28 @@ sudo -u postgres psql
 CREATE DATABASE tasks_db;
 CREATE USER task_user WITH PASSWORD 'password';
 GRANT ALL PRIVILEGES ON DATABASE tasks_db TO task_user;
-ALTER TABLE tasks OWNER TO task_user;
-
+ALTER DATABASE tasks_db OWNER TO task_user;
+\c tasks_db
+ALTER SCHEMA public OWNER TO task_user;
+GRANT ALL ON SCHEMA public TO task_user;
 \q
 ```
+
 ## Example .env
 
 ```env
 DATABASE_URL=postgresql://task_user:password@localhost:5432/tasks_db
 ```
+
 ---
 
 # Database Migrations
+
+```bash
+make migrate
+```
+
+Or manually:
 
 ```bash
 alembic upgrade head
@@ -118,6 +132,12 @@ alembic upgrade head
 ---
 
 # Run Application
+
+```bash
+make run
+```
+
+Or manually:
 
 ```bash
 uvicorn app.main:app --reload
@@ -174,15 +194,35 @@ curl -X DELETE http://127.0.0.1:8000/tasks/1
 # Running Tests
 
 ```bash
-pip install pytest httpx
+make test
+```
+
+Or manually:
+
+```bash
 pytest -v
 ```
 
 Expected output:
+
 ```
 ===== 5 passed in 0.75s =====
 ```
 
+---
+
+# Makefile Commands
+
+| Command | Description |
+|---------|-------------|
+| `make help` | Show all commands |
+| `make install` | Install dependencies |
+| `make run` | Run development server |
+| `make test` | Run tests |
+| `make migrate` | Run database migrations |
+| `make clean` | Clean cache files |
+| `make clean-all` | Clean cache + remove venv |
+| `make shell` | Open Python shell |
 
 ---
 
@@ -207,7 +247,7 @@ sudo systemctl enable task_manager_api
 sudo systemctl status task_manager_api
 ```
 
-### Service File Example
+## Service File Example
 
 ```ini
 [Unit]
@@ -228,6 +268,7 @@ Restart=always
 [Install]
 WantedBy=multi-user.target
 ```
+
 
 ---
 
@@ -252,8 +293,9 @@ test.db
 - PostgreSQL / SQLAlchemy
 - Alembic / pytest
 - Docker / Gunicorn / systemd
+- Make
 
 ---
 
- Negin Alizadeh
+Negin Alizadeh
 ```
