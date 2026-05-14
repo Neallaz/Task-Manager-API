@@ -7,3 +7,7 @@ env/
 *.sqlite3
 test.db
 test.sqlite
+.pytest_cache/
+.vscode/
+*.log
+.env.example
