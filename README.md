@@ -38,8 +38,6 @@ project/
 ├── alembic/
 │   └── versions/
 ├── requirements.txt
-├── Dockerfile
-├── docker-compose.yml
 ├── gunicorn_conf.py
 ├── task_manager_api.service
 ├── .env.example
