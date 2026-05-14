@@ -1,3 +1,4 @@
+```markdown
 # FastAPI Tasks API
 
 A simple CRUD REST API built with FastAPI and PostgreSQL.
@@ -13,8 +14,8 @@ A simple CRUD REST API built with FastAPI and PostgreSQL.
 - Docker Support
 - Gunicorn Deployment
 - systemd Service
-- Linux Ready
 - Automated API Testing with pytest
+- Alembic Migrations
 
 ---
 
@@ -32,13 +33,18 @@ project/
 │   ├── routers/
 │   │   └── tasks.py
 │   └── __init__.py
+├── tests/
+│   └── test_tasks.py
+├── alembic/
+│   └── versions/
 ├── requirements.txt
 ├── Dockerfile
 ├── docker-compose.yml
 ├── gunicorn_conf.py
-├── taskapi.service
-├── .env
+├── task_manager_api.service
+├── .env.example
 ├── .gitignore
+├── alembic.ini
 └── README.md
 ```
 
@@ -47,7 +53,7 @@ project/
 # Requirements
 
 - Python 3.11+
-- PostgreSQL
+- PostgreSQL 15+
 - pip
 - virtualenv
 
@@ -59,25 +65,15 @@ project/
 
 ```bash
 git clone YOUR_REPOSITORY_URL
-
 cd project
 ```
-
----
 
 ## 2. Create Virtual Environment
 
 ```bash
 python3 -m venv venv
-```
-
-Activate environment:
-
-```bash
 source venv/bin/activate
 ```
-
----
 
 ## 3. Install Dependencies
 
@@ -85,85 +81,57 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
+## 4. Environment Variables
+
+```bash
+cp .env.example .env
+# Edit .env with your database credentials
+```
+
 ---
 
 # PostgreSQL Setup
-
-Login to PostgreSQL:
 
 ```bash
 sudo -u postgres psql
 ```
 
-Create database and user:
-
 ```sql
 CREATE DATABASE tasks_db;
-
-CREATE USER postgres WITH PASSWORD 'password';
-
+CREATE USER task_user WITH PASSWORD 'your_password';
 GRANT ALL PRIVILEGES ON DATABASE tasks_db TO task_user;
-```
-
-Exit:
-
-```sql
 \q
 ```
 
 ---
 
-# Environment Variables
+# Database Migrations
 
-Create `.env` file:
-
-```env
-DATABASE_URL=postgresql://postgres:password@localhost:5432/tasks_db
+```bash
+alembic upgrade head
 ```
 
 ---
 
 # Run Application
 
-## Development Mode
-
 ```bash
 uvicorn app.main:app --reload
 ```
 
-Application runs on:
-
-```bash
-http://127.0.0.1:8000
-```
-
----
-
-# Swagger Documentation
-
-Swagger UI:
-
-```bash
-http://127.0.0.1:8000/docs
-```
-
-ReDoc:
-
-```bash
-http://127.0.0.1:8000/redoc
-```
+Visit: `http://127.0.0.1:8000/docs`
 
 ---
 
 # API Endpoints
 
 | Method | Endpoint | Description |
-|---|---|---|
+|--------|----------|-------------|
 | GET | /tasks/ | Get all tasks |
-| POST | /tasks/ | Create new task |
-| GET | /tasks/{task_id} | Get single task |
-| PUT | /tasks/{task_id} | Update task |
-| DELETE | /tasks/{task_id} | Delete task |
+| POST | /tasks/ | Create task |
+| GET | /tasks/{id} | Get single task |
+| PUT | /tasks/{id} | Update task |
+| DELETE | /tasks/{id} | Delete task |
 
 ---
 
@@ -174,13 +142,8 @@ http://127.0.0.1:8000/redoc
 ```bash
 curl -X POST "http://127.0.0.1:8000/tasks/" \
 -H "Content-Type: application/json" \
--d '{
-  "title": "Learn FastAPI",
-  "description": "Practice CRUD APIs"
-}'
+-d '{"title": "Learn FastAPI", "description": "Practice CRUD APIs"}'
 ```
-
----
 
 ## Get Tasks
 
@@ -188,19 +151,13 @@ curl -X POST "http://127.0.0.1:8000/tasks/" \
 curl http://127.0.0.1:8000/tasks/
 ```
 
----
-
 ## Update Task
 
 ```bash
 curl -X PUT "http://127.0.0.1:8000/tasks/1" \
 -H "Content-Type: application/json" \
--d '{
-  "is_completed": true
-}'
+-d '{"is_completed": true}'
 ```
-
----
 
 ## Delete Task
 
@@ -210,164 +167,89 @@ curl -X DELETE http://127.0.0.1:8000/tasks/1
 
 ---
 
-# Docker Setup
-
-## Build and Run
+# Running Tests
 
 ```bash
-docker compose up --build
+pip install pytest httpx
+pytest -v
 ```
 
-Run in background:
-
-```bash
-docker compose up -d
+Expected output:
+```
+===== 5 passed in 0.75s =====
 ```
 
-Stop containers:
-
-```bash
-docker compose down
-```
-
-Swagger URL:
-
-```bash
-http://localhost:8000/docs
-```
 
 ---
 
 # Gunicorn Deployment
 
-Run with Gunicorn:
-
 ```bash
 gunicorn app.main:app \
--k uvicorn.workers.UvicornWorker \
--b 0.0.0.0:8000
+  -k uvicorn.workers.UvicornWorker \
+  -b 0.0.0.0:8000 \
+  --workers 4
 ```
 
 ---
 
 # systemd Service
 
-Copy service file:
-
 ```bash
 sudo cp task_manager_api.service /etc/systemd/system/
-```
-
-Reload daemon:
-
-```bash
 sudo systemctl daemon-reload
+sudo systemctl start task_manager_api
+sudo systemctl enable task_manager_api
+sudo systemctl status task_manager_api
 ```
 
-Start service:
+### Service File Example
 
-```bash
-sudo systemctl start taskapi
-```
+```ini
+[Unit]
+Description=FastAPI Tasks API
+After=network.target postgresql.service
 
-Enable auto start:
+[Service]
+User=yourusername
+Group=yourgroup
+WorkingDirectory=/home/yourusername/Task-Manager-API
+Environment="PATH=/home/yourusername/Task-Manager-API/venv/bin"
+Environment="DATABASE_URL=postgresql://task_user:password@localhost:5432/tasks_db"
+ExecStart=/home/yourusername/Task-Manager-API/venv/bin/gunicorn app.main:app \
+    -k uvicorn.workers.UvicornWorker \
+    -b 0.0.0.0:8000
+Restart=always
 
-```bash
-sudo systemctl enable taskapi
-```
-
-Check status:
-
-```bash
-sudo systemctl status taskapi
-```
-
----
----
-
-# Running Tests
-
-This project includes automated API tests using `pytest` and `FastAPI TestClient`.
-
-## Install Test Dependencies
-
-```bash
-pip install pytest httpx
+[Install]
+WantedBy=multi-user.target
 ```
 
 ---
 
-## Test Structure
+# .gitignore
 
-```bash
-tests/
-└── test_tasks.py
+```gitignore
+venv/
+__pycache__/
+.env
+*.db
+test.db
+.pytest_cache/
+.vscode/
+*.log
 ```
 
 ---
-
-## Run All Tests
-
-```bash
-pytest
-```
-
----
-
-## Run Tests in Verbose Mode
-
-```bash
-pytest -v
-```
-
----
-
-## Expected Output
-
-```bash
-===== 5 passed in 1.25s =====
-```
-
----
-
-## Tested Features
-
-The following features are covered by automated tests:
-
-- Create Task
-- Get All Tasks
-- Get Single Task
-- Update Task
-- Delete Task
-
----
-
-## Example Test File
-
-```python
-from fastapi.testclient import TestClient
-
-def test_get_tasks():
-    response = client.get("/tasks/")
-    assert response.status_code == 200
-```
-
----
-
 
 # Technologies Used
 
-- Python
-- FastAPI
-- PostgreSQL
-- SQLAlchemy
-- Gunicorn
-- Uvicorn
-- Docker
-- systemd
-- pytest
-  
+- Python / FastAPI
+- PostgreSQL / SQLAlchemy
+- Alembic / pytest
+- Docker / Gunicorn / systemd
 
 ---
 
-Negin Alizadeh
+ Negin Alizadeh
+```
