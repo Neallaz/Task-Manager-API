@@ -217,7 +217,7 @@ User=yourusername
 Group=yourgroup
 WorkingDirectory=/home/yourusername/Task-Manager-API
 Environment="PATH=/home/yourusername/Task-Manager-API/venv/bin"
-Environment="DATABASE_URL=postgresql://postgres:password@localhost:5432/tasks_db"
+Environment="DATABASE_URL=postgresql://task_user:password@localhost:5432/tasks_db"
 ExecStart=/home/yourusername/Task-Manager-API/venv/bin/gunicorn app.main:app \
     -k uvicorn.workers.UvicornWorker \
     -b 0.0.0.0:8000
