@@ -64,8 +64,8 @@ project/
 ## 1. Clone Repository
 
 ```bash
-git clone YOUR_REPOSITORY_URL
-cd project
+git clone https://github.com/Neallaz/Task-Manager-API.git
+cd Task-Manager-API
 ```
 
 ## 2. Create Virtual Environment
@@ -98,7 +98,7 @@ sudo -u postgres psql
 
 ```sql
 CREATE DATABASE tasks_db;
-CREATE USER task_user WITH PASSWORD 'your_password';
+CREATE USER postgres WITH PASSWORD 'password';
 GRANT ALL PRIVILEGES ON DATABASE tasks_db TO task_user;
 \q
 ```
@@ -215,7 +215,7 @@ User=yourusername
 Group=yourgroup
 WorkingDirectory=/home/yourusername/Task-Manager-API
 Environment="PATH=/home/yourusername/Task-Manager-API/venv/bin"
-Environment="DATABASE_URL=postgresql://task_user:password@localhost:5432/tasks_db"
+Environment="DATABASE_URL=postgresql://postgres:password@localhost:5432/tasks_db"
 ExecStart=/home/yourusername/Task-Manager-API/venv/bin/gunicorn app.main:app \
     -k uvicorn.workers.UvicornWorker \
     -b 0.0.0.0:8000
