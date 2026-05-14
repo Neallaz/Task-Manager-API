@@ -5,8 +5,8 @@ from app import models, schemas
 logger = logging.getLogger(__name__)
 
 
-def get_tasks(db: Session):
-    return db.query(models.Task).all()
+def get_tasks(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.Task).offset(skip).limit(limit).all()
 
 
 
@@ -36,19 +36,13 @@ def update_task(db: Session, task_id: int, task: schemas.TaskUpdate):
     if not db_task:
         return None
 
-    if task.title is not None:
-        db_task.title = task.title
-
-    if task.description is not None:
-        db_task.description = task.description
-
-    if task.is_completed is not None:
-        db_task.is_completed = task.is_completed
-
+    update_data = task.model_dump(exclude_unset=True)
+    for field, value in update_data.items():
+        setattr(db_task, field, value)
+    
     db.commit()
     db.refresh(db_task)
-    logger.info(f"Task operation successful: {db_task.id}")
-
+    logger.info(f"Task {db_task.id} updated successfully")
     return db_task
 
 

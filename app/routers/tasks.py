@@ -13,11 +13,14 @@ router = APIRouter(
 
 
 @router.get("/", response_model=List[schemas.TaskResponse])
-def get_all_tasks(db: Session = Depends(get_db)):
-    return crud.get_tasks(db)
+def get_all_tasks(
+    skip: int = 0, 
+    limit: int = 100,  
+    db: Session = Depends(get_db)):
+    return crud.get_tasks(db, skip=skip, limit=limit)
 
 
-@router.post("/", response_model=schemas.TaskResponse)
+@router.post("/", response_model=schemas.TaskResponse, status_code=201)
 def create_new_task(
     task: schemas.TaskCreate,
     db: Session = Depends(get_db)
@@ -52,7 +55,7 @@ def update_single_task(
     return updated_task
 
 
-@router.delete("/{task_id}")
+@router.delete("/{task_id}", status_code=204)
 def delete_single_task(
     task_id: int,
     db: Session = Depends(get_db)
