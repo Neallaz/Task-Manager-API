@@ -166,7 +166,7 @@ Visit: `http://127.0.0.1:8000/docs`
 ```bash
 curl -X POST "http://127.0.0.1:8000/tasks/" \
 -H "Content-Type: application/json" \
--d '{"title": "Learn FastAPI", "description": "Practice CRUD APIs"}'
+-d '{"title": "Test FastAPI", "description": "Testing 1"}'
 ```
 
 ## Get Tasks
