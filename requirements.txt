@@ -7,4 +7,6 @@ python-dotenv
 pydantic
 pydantic-settings
 alembic
+pytest 
+httpx
 
