@@ -98,6 +98,8 @@ sudo -u postgres psql
 CREATE DATABASE tasks_db;
 CREATE USER task_user WITH PASSWORD 'password';
 GRANT ALL PRIVILEGES ON DATABASE tasks_db TO task_user;
+ALTER TABLE tasks OWNER TO task_user;
+
 \q
 ```
 ## Example .env
