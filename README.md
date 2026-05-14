@@ -272,21 +272,6 @@ WantedBy=multi-user.target
 
 ---
 
-# .gitignore
-
-```gitignore
-venv/
-__pycache__/
-.env
-*.db
-test.db
-.pytest_cache/
-.vscode/
-*.log
-```
-
----
-
 # Technologies Used
 
 - Python / FastAPI
